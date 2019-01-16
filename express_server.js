@@ -58,6 +58,13 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 });
 
+app.post("/urls/:id", (req,res)  => {
+
+  urlDatabase[req.params.id] = req.body.longURL
+  console.log(req.body);
+  res.redirect("/urls");
+});
+
 function generateRandomString() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
