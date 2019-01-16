@@ -31,3 +31,9 @@ app.get("/urls", (req, res) => {
 });
 
 
+app.get("/urls/:id", (req, res) => {
+  let templateVars = { shortURL: req.params.id , urls: urlDatabase};
+  console.log(templateVars)
+  res.render("urls_show", templateVars);
+});
+
