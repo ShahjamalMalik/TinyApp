@@ -9,9 +9,13 @@
   </header>
     <ul>
       <% for (var url in urls) { %>
-        <li> <%=url%> - <%=urls[url]%> - <a href='#'> Shorten Link </a>  <form method="POST" action="/urls/<%=url%>/delete"><button type="submit">Delete</button></form><form method="GET" action="/urls/<%=url%>"><button type="subit">Edit</form>
+        <li> <%=url%> - <%=urls[url]%> - <a href='#'> Shorten Link </a>
+          <form method="POST" action="/urls/<%=url%>/delete"><button type="submit">Delete</button></form><form method="GET" action="/urls/<%=url%>"><button type="submit">Edit</button></form>
         </li>
       <% } %>
     </ul>
 </body>
 </html>
+
+
+
