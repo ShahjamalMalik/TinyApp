@@ -9,7 +9,8 @@
   </header>
     <ul>
       <% for (var url in urls) { %>
-        <li> <%=url%> - <%=urls[url]%> - <a href='#'> Shorten Link </a> </li>
+        <li> <%=url%> - <%=urls[url]%> - <a href='#'> Shorten Link </a>  <form method="POST" action="/urls/<%=url%>/delete"><button type="submit">Delete</button></form>
+</li>
       <% } %>
     </ul>
 </body>
