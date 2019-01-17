@@ -9,9 +9,17 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  'b2xVn2': {longURL : "http://www.lighthouselabs.ca",
+             userID : "userRandomID",
+            },
+
+
+  '9sm5xK': {longURL: "http://www.google.com",
+             userID: "user2RandomID",
+            }
+
 };
+
 
 const users = {
   "userRandomID": {
@@ -34,7 +42,12 @@ app.listen(PORT, () => {
 app.get("/urls/new", (req, res) => {
   let templateVars = { user: users[req.cookies.user_id]
                      };
-  res.render("urls_new");
+  if (users[req.cookies.user_id] === undefined) {
+    res.redirect('/login')
+  }
+  else {
+    res.render("urls_new");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -83,13 +96,17 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id]
+  if (urlDatabase[req.params.id].userID == req.cookies.user_id) {
+    delete urlDatabase[req.params.id]
+  }
   res.redirect('/urls');
 });
 
 app.post("/urls/:id", (req,res)  => {
+  if (urlDatabase[req.params.id].userID == req.cookies.user_id) {
+    urlDatabase[req.params.id] = req.body.longURL
+  }
 
-  urlDatabase[req.params.id] = req.body.longURL
   res.redirect("/urls");
 });
 
@@ -165,4 +182,14 @@ for (var userID in users) {
   }
 };
   return null;
+}
+
+function urlsForUser(id) {
+  var urlForThisUser = {};
+  for (var url in urlDatabase) {
+    if (id === urlDatabase[url].userID) {
+      urlForThisUser[url] = urlDatabase[url];
+    }
+  }
+  return urlForThisUser;
 }

@@ -8,11 +8,20 @@
     <% include ./partials/_header %>
   </header>
     <ul>
-      <% for (var url in urls) { %>
-        <li> <%=url%> - <%=urls[url]%> - <a href='#'> Shorten Link </a>
-          <form method="POST" action="/urls/<%=url%>/delete"><button type="submit">Delete</button></form><form method="GET" action="/urls/<%=url%>"><button type="submit">Edit</button></form>
-        </li>
-      <% } %>
+
+
+
+      <%if (typeof(user) != 'undefined') { %>
+  <% for (var url in urls) { %>
+    <li> <%=url%> - <%=urls[url].longURL%> - <a href='#'> Shorten Link </a>
+    <form method="POST" action="/urls/<%=url%>/delete"><button type="submit">Delete</button></form><form method="GET" action="/urls/<%=url%>"><button type="submit">Edit</button></form>
+    </li>
+  <% } %>
+<% } else { %>
+
+ Please <a href = '/login' >Sign In</a> or <a href = '/register' >Register</a>
+
+<% } %>
     </ul>
 </body>
 </html>
