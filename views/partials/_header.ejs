@@ -2,12 +2,20 @@
 
 <header>
   <h2>TinyApp</h2>
+<%if (typeof(username) != 'undefined') { %>
+<h5><%= "Welcome, " + username %></h5>
+<form method="POST" action="/logout"><button type="submit">Logout</button></form>
 
+<% } else { %>
 
+<form action="/login" method="POST">Username <input type="email" name="email"/>Password <input type="password" name="password"/><button type="submit">Sign In</button>
+</form>
 
-  <form action="/login" method="POST">Username <input type="email" name="email"/>Password <input type="password" name="email"/><button type="submit">Sign In</button>
+<% } %>
   </form>
 </header>
+
+
 
 
 

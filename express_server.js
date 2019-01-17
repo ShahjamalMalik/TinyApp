@@ -4,6 +4,7 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser')
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 
@@ -19,7 +20,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["user_id"]
+  let templateVars = { username: req.cookies.user_id
                      };
   res.render("urls_new");
 });
@@ -33,8 +34,9 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  console.log(req.cookies);
   let templateVars = { urls: urlDatabase,
-                       username: req.cookies["user_id"]
+                       username: req.cookies.user_id
                      };
   res.render("urls_index", templateVars);
 });
@@ -43,7 +45,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
                        urls: urlDatabase,
-                       username: req.cookies["user_id"]
+                       username: req.cookies.user_id
                      };
   console.log(templateVars)
   res.render("urls_show", templateVars);
@@ -75,7 +77,7 @@ app.post("/urls/:id", (req,res)  => {
 
 app.post("/login", (req, res) => {
 
-  let value = generateRandomString();
+  let value = req.body.email;
   res.cookie("user_id", value)
   res.redirect("/urls");
 });
