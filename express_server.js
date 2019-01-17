@@ -32,7 +32,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies.user_id
+  let templateVars = { user: users[req.cookies.user_id]
                      };
   res.render("urls_new");
 });
@@ -46,9 +46,8 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies);
   let templateVars = { urls: urlDatabase,
-                       username: req.cookies.user_id
+                       user: users[req.cookies.user_id]
                      };
   res.render("urls_index", templateVars);
 });
@@ -57,9 +56,8 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
                        urls: urlDatabase,
-                       username: req.cookies.user_id
+                       user: users[req.cookies.user_id]
                      };
-  console.log(templateVars)
   res.render("urls_show", templateVars);
 });
 
@@ -73,8 +71,12 @@ app.get("/register", (req,res) => {
   res.render("register", templateVars);
 });
 
+app.get("/login", (req,res) => {
+  let templateVars = {};
+  res.render("login", templateVars);
+});
+
 app.post("/urls", (req, res) => {
-  console.log(req.body.longURL);  // debug statement to see POST parameters
   let randomString = generateRandomString();
   urlDatabase[randomString] = req.body.longURL
   res.redirect(`/urls/${randomString}`);         // Respond with 'Ok' (we will replace this)
@@ -88,20 +90,42 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req,res)  => {
 
   urlDatabase[req.params.id] = req.body.longURL
-  console.log(req.body);
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
 
-  let value = req.body.email;
-  res.cookie("user_id", value)
+  let userID = retrieveUserID(req.body.email, req.body.password);
+  if (userID === null) {
+    res.status(403).send('Email not found!')
+    return
+   }
+   if (userID === false) {
+    res.status(403).send('Incorrect Password');
+    return
+   }
+
+  console.log(users[req.cookies["user_id"]])
+  res.cookie("user_id", userID)
   res.redirect("/urls");
 });
 
 app.post("/register", (req,res) => {
   var id = generateRandomString();
   let foundUser = null;
+  if (req.body.email === '' || req.body.password === '') {
+    res.status(400).send('Please fill out missing fields');
+  }
+
+  for (var i in users) {
+    if (users[i].email == req.body.email) {
+      foundUser = users[i]
+    }
+  }
+
+  if (foundUser) {
+    res.status(400).send('Email already exists!')
+  };
 
   users[id] =  {
     id,
@@ -111,7 +135,11 @@ app.post("/register", (req,res) => {
 
   res.cookie("user_id", id);
   res.redirect("/urls");
-  console.log(users);
+});
+
+app.post("/logout", (req, res) => {
+res.clearCookie('user_id');
+res.redirect('/urls');
 });
 
 function generateRandomString() {
@@ -123,3 +151,18 @@ function generateRandomString() {
 
   return text;
 };
+
+function retrieveUserID (email, password) {
+
+for (var userID in users) {
+  if (users[userID].email === email){
+    if (users[userID].password === password) {
+      return userID
+    } else {
+
+    return false
+    }
+  }
+};
+  return null;
+}
