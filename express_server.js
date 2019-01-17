@@ -51,16 +51,21 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+app.get("/register", (req,res) => {
+  let templateVars = {};
+  res.render("register", templateVars);
+});
+
 app.post("/urls", (req, res) => {
   console.log(req.body.longURL);  // debug statement to see POST parameters
   let randomString = generateRandomString();
   urlDatabase[randomString] = req.body.longURL
   res.redirect(`/urls/${randomString}`);         // Respond with 'Ok' (we will replace this)
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
