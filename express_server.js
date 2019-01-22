@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
@@ -25,12 +26,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync('purple-monkey-dinosaur', 10)
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync('dishwasher-funk', 10)
   }
 }
 
@@ -120,19 +121,14 @@ app.post("/urls/:id", (req,res)  => {
 
 app.post("/login", (req, res) => {
 
-  let userID = retrieveUserID(req.body.email, req.body.password);
-  if (userID === null) {
-    res.status(403).send('Email not found!')
-    return
-   }
-   if (userID === false) {
-    res.status(403).send('Incorrect Password');
-    return
-   }
+  let user = retrieveUserID(req.body.email, req.body.password);
+  if (user === null) {
+    res.status(401).send('The email or password that was entered is incorrect!')
+   } else {
 
-  console.log(users[req.cookies["user_id"]])
-  res.cookie("user_id", userID)
+  res.cookie("user_id", user.id)
   res.redirect("/urls");
+  }
 });
 
 app.post("/register", (req,res) => {
@@ -155,7 +151,7 @@ app.post("/register", (req,res) => {
   users[id] =  {
     id,
     email: req.body.email,
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, 10)
   };
 
   res.cookie("user_id", id);
@@ -181,14 +177,14 @@ function retrieveUserID (email, password) {
 
 for (var userID in users) {
   if (users[userID].email === email){
-    if (users[userID].password === password) {
-      return userID
+    if (bcrypt.compareSync(password, users[userID].password)) {
+      return users[userID]
     } else {
 
     return false
     }
   }
-};
+}
   return null;
 }
 
@@ -201,3 +197,11 @@ function urlsForUser(id) {
   }
   return urlForThisUser;
 }
+
+function getUserWithEmail(email) {
+  const matchingID = Object.keys(users).filter(userID => {
+    return users[userID].email === email;
+  })[0];
+  return users[matchingID];
+}
+
