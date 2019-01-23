@@ -13,10 +13,12 @@
     <header>
       <% include ./partials/_header %>
     </header>
+    <a href = '/urls/new' >Create New Short URL</a>
     <% for (var url in urls) { %>
-      <li> <%=url%> - <%=urls[url].longURL%> - <a href='#'> Shorten Link </a>
+      <li> <a href = '<%=urls[url].longURL%>' ><%=url%></a> - <%=urls[url].longURL%> - <a href='#'> Shorten Link </a>
       <form method="POST" action="/urls/<%=url%>/delete"><button type="submit">Delete</button></form><form method="GET" action="/urls/<%=url%>"><button type="submit">Edit</button></form>
       </li>
+
 <% } %>
 <% } else { %>
 
@@ -26,6 +28,5 @@
     </ul>
 </body>
 </html>
-
 
 
