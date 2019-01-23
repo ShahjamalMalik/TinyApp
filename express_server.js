@@ -44,6 +44,10 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+app.get("/"), (req, res) => {
+  res.redirect('/urls');
+}
+
 app.get("/urls/new", (req, res) => {
   let templateVars = { user: users[req.session.user_id]
                      };
@@ -57,10 +61,6 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.get("/urls", (req, res) => {
@@ -101,7 +101,7 @@ app.post("/urls", (req, res) => {
     userID: req.session.user_id
   }
 
-  res.redirect(`/urls/${randomString}`);
+  res.redirect('/urls');
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -200,6 +200,5 @@ function urlsForUser(id) {
   }
   return urlForThisUser;
 }
-
 
 
